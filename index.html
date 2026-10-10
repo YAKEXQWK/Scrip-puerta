@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Hotel Abandonado: Edición Definitiva Halloween</title>
+    <style>
+        :root {
+            --bg-hotel: #0c0704;
+            --madera-oscura: #1f0d05;
+            --madera-marco: #3b1e0d;
+            --madera-tabla: #522b12;
+            --acento-fuego: #ff6600;
+            --texto-dorado: #f3e5ab;
+            --metal-oxidado: #2e3033;
+            --luz-foco: rgba(255, 180, 50, 0.25);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-hotel);
+            color: var(--texto-dorado);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* EFECTO DE LUZ Y FOCO PARPADEANTE */
+        .foco-techo {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 16px; height: 24px; background: #444; border-radius: 0 0 8px 8px; z-index: 10;
+        }
+        .foco-techo::after {
+            content: ''; position: absolute; bottom: -8px; left: 3px; width: 10px; height: 10px;
+            background: #fff; border-radius: 50%; box-shadow: 0 0 15px #ffb432;
+            animation: parpadeoFoco 3.5s infinite alternate;
+        }
+
+        .luz-ambiente {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 50% 20%, var(--luz-foco) 0%, rgba(0,0,0,0.92) 80%);
+            pointer-events: none; z-index: 5;
+            animation: ambienteTitilante 4s infinite alternate;
+        }
+
+        @keyframes parpadeoFoco {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 10px #ffb432); }
+            40% { opacity: 0.8; } 42% { opacity: 0.2; } 43% { opacity: 0.9; }
+            80% { opacity: 1; } 82% { opacity: 0.1; } 84% { opacity: 0.8; }
+        }
+
+        @keyframes ambienteTitilante {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+            82% { opacity: 0.4; }
+            84% { opacity: 0.9; }
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .escenario-hotel {
+            position: relative; width: 95%; max-width: 680px; height: 520px;
+            background: linear-gradient(to bottom, #170a04 0%, #0a0402 100%);
+            border: 8px solid var(--madera-marco); border-radius: 12px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.9), inset 0 0 50px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+            padding: 15px; box-sizing: border-box; z-index: 2;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0,0,0,0.3) 50px, rgba(0,0,0,0.3) 54px);
+        }
+
+        /* PANEL SUPERIOR */
+        .panel-superior {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(20, 10, 5, 0.85); border: 2px solid var(--madera-marco);
+            border-radius: 8px; padding: 8px 12px; box-sizing: border-box; z-index: 6;
+        }
+
+        .vidas-contenedor { display: flex; gap: 4px; }
+        .corazon-ui {
+            width: 18px; height: 18px; background-color: #e63946; display: inline-block;
+            transform: rotate(-45deg); margin: 0 4px; position: relative;
+        }
+        .corazon-ui::before, .corazon-ui::after {
+            content: ""; width: 18px; height: 18px; background-color: #e63946; border-radius: 50%; position: absolute;
+        }
+        .corazon-ui::before { top: -9px; left: 0; }
+        .corazon-ui::after { left: 9px; top: 0; }
+        .corazon-ui.vacio { background-color: #442225; }
+        .corazon-ui.vacio::before, .corazon-ui.vacio::after { background-color: #442225; }
+
+        .indicador-dulces { display: flex; align-items: center; gap: 6px; font-weight: bold; color: var(--acento-fuego); }
+        .icono-dulce { width: 14px; height: 14px; background: #ff7518; border-radius: 50%; display: inline-block; box-shadow: 0 0 5px #ff7518; }
+
+        /* INVENTARIO DE 3 CASILLAS */
+        .inventario-ui { display: flex; gap: 8px; }
+        .slot-inv {
+            width: 42px; height: 42px; background: #120904; border: 2px solid var(--madera-marco);
+            border-radius: 6px; display: flex; align-items: center; justify-content: center;
+            font-size: 9px; text-align: center; cursor: pointer; position: relative;
+        }
+        .slot-inv:hover { border-color: var(--acento-fuego); }
+
+        /* MUEBLES */
+        .zona-muebles { position: absolute; bottom: 120px; width: 90%; display: flex; justify-content: space-around; z-index: 6; }
+        .mueble-cajonera {
+            width: 75px; height: 55px; background: var(--madera-tabla); border: 3px solid #200f06;
+            border-radius: 4px; display: flex; flex-direction: column; justify-content: space-around; padding: 3px; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+        }
+        .cajon-linea { height: 12px; background: #2a1408; border: 1px solid #140703; border-radius: 2px; display: flex; align-items: center; justify-content: center; }
+        .cajon-linea::after { content: ''; width: 8px; height: 2px; background: #d4a373; }
+
+        /* PUERTAS */
+        .contenedor-puertas { display: flex; justify-content: center; align-items: flex-end; gap: 12px; width: 100%; height: 240px; z-index: 6; margin-bottom: 10px; }
+        .puerta-marco {
+            width: 110px; height: 210px; background: #110804; border: 4px solid var(--madera-marco);
+            border-bottom: none; border-radius: 8px 8px 0 0; position: relative;
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s; box-shadow: inset 0 0 20px #000;
+        }
+        .puerta-marco:hover { transform: translateY(-4px); border-color: var(--acento-fuego); }
+        .numero-puerta {
+            position: absolute; top: -16px; background: #1a0a03; border: 2px solid var(--acento-fuego);
+            color: var(--texto-dorado); padding: 2px 8px; border-radius: 10px; font-weight: bold; font-size: 11px;
+            box-shadow: 0 0 8px rgba(255, 117, 24, 0.5);
+        }
+        .hoja-puerta { width: 100%; height: 100%; position: relative; border-radius: 4px 4px 0 0; display: flex; align-items: center; justify-content: center; }
+
+        .puerta-comun { background: linear-gradient(to right, #3d2110, #542e17, #3d2110); border: 2px solid #261308; }
+        .puerta-comun::after { content: ''; position: absolute; right: 10px; width: 8px; height: 8px; background: #d4a373; border-radius: 50%; }
+        .puerta-rota { background: #2b170c; border: 2px solid #170b05; }
+        .tablon-roto { position: absolute; width: 105%; height: 18px; background: #4a2713; border: 1px solid #1c0e06; transform: rotate(-12deg); }
+        .tablon-roto-2 { position: absolute; width: 100%; height: 16px; background: #3b1d0d; border: 1px solid #1c0e06; transform: rotate(18deg); top: 60px; }
+        .puerta-embrujada { background: linear-gradient(to bottom, #2d3136, #1a1c1e); border: 2px solid #484e54; }
+        .telarana-css { position: absolute; top: 5px; right: 5px; width: 35px; height: 35px; border-right: 2px dashed rgba(255,255,255,0.4); border-bottom: 2px dashed rgba(255,255,255,0.4); border-radius: 0 0 100% 0; }
+        .puerta-electrica { background: linear-gradient(to bottom, #1f2937, #111827); border: 2px solid #3b82f6; }
+
+        /* ANIMACIÓN DE FANTASMA */
+        .fantasma-animacion {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 50px; height: 70px; background: radial-gradient(circle, rgba(168,85,247,0.9) 0%, rgba(76,29,149,0.7) 60%, transparent 100%);
+            border-radius: 25px 25px 10px 10px; box-shadow: 0 0 25px #a855f7;
+            animation: fantasmaAparecer 0.8s ease-in-out infinite alternate; z-index: 20; display: flex; align-items: center; justify-content: center;
+        }
+        .fantasma-animacion::before { content: '👻'; font-size: 32px; filter: drop-shadow(0 0 8px #fff); }
+        @keyframes fantasmaAparecer {
+            0% { transform: translateX(-50%) scale(0.6) translateY(20px); opacity: 0.3; }
+            100% { transform: translateX(-50%) scale(1.1) translateY(-10px); opacity: 1; }
+        }
+
+        /* MODALES Y MENÚ */
+        #modal-puzle, #modal-tienda, #modal-tablero {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.92); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+        }
+        .canvas-laberinto { background: #111827; border: 4px solid #3b82f6; border-radius: 8px; touch-action: none; }
+
+        .pantalla-menu {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #240f05 0%, #050201 90%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 200; text-align: center; padding: 20px; box-sizing: border-box;
+        }
+        .btn-principal {
+            background: linear-gradient(135deg, #ff7518, #d97706); color: #fff; border: none;
+            padding: 12px 28px; font-size: 14px; font-weight: bold; border-radius: 8px;
+            cursor: pointer; margin-top: 10px; font-family: inherit;
+        }
+        .btn-principal:disabled { background: #444; cursor: not-allowed; }
+
+        .burbuja-texto {
+            position: absolute; bottom: 12px; background: rgba(10, 5, 2, 0.9);
+            border: 2px solid var(--acento-fuego); padding: 10px; border-radius: 8px;
+            width: 90%; text-align: center; font-size: 11px; z-index: 8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="foco-techo"></div>
+    <div class="luz-ambiente"></div>
+
+    <!-- MENÚ PRINCIPAL -->
+    <div id="pantalla-menu" class="pantalla-menu">
+        <h1 style="color: var(--acento-fuego); font-size: 22px; margin-bottom: 5px;">🎃 HOTEL ABANDONADO 🦇</h1>
+        <p style="font-size: 12px; color: #d4a373; max-width: 400px;">Sobrevive a las 260 salas y consigue intentos para el tablero de premios (1 intento cada 3 salas).</p>
+
+        <div id="info-reintentos" style="font-size: 11px; color: #f3e5ab; margin: 5px 0;">Partidas disponibles: 2/2</div>
+        <div id="intentos-premio-disponibles" style="font-size: 13px; color: #10b981; font-weight: bold; margin-bottom: 8px;">🎁 Intentos de Premios: 0</div>
+        <div id="temporizador-espera" style="font-size: 12px; color: #ef4444; font-weight: bold;"></div>
+
+        <button class="btn-principal" id="btn-jugar" onclick="iniciarPartida()">ENTRAR AL HOTEL</button>
+        <button class="btn-principal" id="btn-tablero" style="background: #3b82f6;" onclick="abrirTableroPremios()">🎰 CANJEAR INTENTOS EN TABLERO</button>
+
+        <div style="margin-top: 15px; background: rgba(0,0,0,0.6); padding: 8px; border-radius: 8px; max-width: 380px; max-height: 100px; overflow-y: auto; text-align: left; border: 1px solid #3b1e0d;">
+            <div style="font-size: 11px; color: var(--acento-fuego); font-weight: bold; text-align: center;">📜 Tus Premios Reclamados:</div>
+            <ul id="lista-premios-ganados" style="font-size: 10px; margin: 3px 0; padding-left: 18px; color: #f3e5ab;">
+                <li>Ningún premio reclamado aún.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ESCENARIO DEL HOTEL -->
+    <div class="escenario-hotel">
+        <div class="panel-superior">
+            <div>
+                <div style="font-size: 9px; color: #a1a1aa;">SALUD</div>
+                <div class="vidas-contenedor" id="contenedor-vidas"></div>
+            </div>
+            <div class="indicador-dulces">
+                <span class="icono-dulce"></span>
+                <span id="lbl-dulces">0</span>
+            </div>
+            <div>
+                <div style="font-size: 9px; color: #a1a1aa; text-align: right;">INVENTARIO (3)</div>
+                <div class="inventario-ui" id="contenedor-inventario">
+                    <div class="slot-inv" onclick="usarItemInv(0)" id="inv-0">-</div>
+                    <div class="slot-inv" onclick="usarItemInv(1)" id="inv-1">-</div>
+                    <div class="slot-inv" onclick="usarItemInv(2)" id="inv-2">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="font-size: 11px; color: var(--acento-fuego); font-weight: bold;" id="lbl-sala-actual">SALA 1 / 260</div>
+
+        <div class="zona-muebles" id="zona-muebles-sala"></div>
+        <div class="contenedor-puertas" id="contenedor-puertas-sala"></div>
+
+        <div class="burbuja-texto" id="lbl-historial">Elige una puerta para avanzar...</div>
+    </div>
+
+    <!-- TABLERO DE PREMIOS -->
+    <div id="modal-tablero">
+        <div style="background: #1a0c05; border: 4px solid var(--acento-fuego); border-radius: 12px; padding: 20px; width: 90%; max-width: 420px; text-align: center;">
+            <h2 style="color: var(--acento-fuego); margin-top: 0; font-size: 16px;">🎰 TABLERO DE PREMIOS</h2>
+            <p style="font-size: 11px; color: #d4a373;">Intentos disponibles: <b id="lbl-intentos-tablero">0</b></p>
+            <div id="resultado-tirada" style="font-size: 13px; color: #10b981; font-weight: bold; margin: 12px 0; min-height: 25px;">Toca la ruleta para gastar un intento.</div>
+            <button class="btn-principal" style="background: #f59e0b; color: #000;" onclick="tirarIntentoPremio()">¡TIRAR INTENTO!</button>
+            <button class="btn-principal" style="background: #ef4444; margin-top: 10px;" onclick="cerrarTableroPremios()">Cerrar Tablero</button>
+        </div>
+    </div>
+
+    <!-- PUZLE DE LABERINTO -->
+    <div id="modal-puzle">
+        <h3 style="color: #3b82f6; margin-bottom: 5px; font-size: 14px;">⚡ TRAZA EL CAMINO HACIA LA SALIDA</h3>
+        <canvas id="canvasLab" class="canvas-laberinto" width="280" height="280"></canvas>
+        <button class="btn-principal" style="background: #374151; margin-top: 10px;" onclick="cancelarPuzle()">Cancelar</button>
+    </div>
+
+    <!-- TIENDA -->
+    <div id="modal-tienda">
+        <div style="background: #1a0c05; border: 4px solid var(--acento-fuego); border-radius: 12px; padding: 20px; width: 90%; max-width: 420px; text-align: center;">
+            <h2 style="color: var(--acento-fuego); margin-top: 0; font-size: 16px;">🏬 TIENDA DEL HOTEL</h2>
+            <p style="font-size: 10px; color: #d4a373;">Dulces: <b id="lbl-dulces-tienda">0</b></p>
+            <div id="lista-items-tienda"></div>
+            <button class="btn-principal" style="margin-top: 10px; background: #10b981;" onclick="cerrarTienda()">CONTINUAR</button>
+        </div>
+    </div>
+
+    <script>
+        const TABLA_PREMIOS = [
+            { nombre: "huevo retro", prob: 30 }, { nombre: "huevo jubilado", prob: 20 },
+            { nombre: "huevo básico", prob: 60 }, { nombre: "huevo roto", prob: 50 },
+            { nombre: "huevo mascota", prob: 30 }, { nombre: "huevo extinto", prob: 35 },
+            { nombre: "huevo hada", prob: 65 }, { nombre: "caja 2D", prob: 10 },
+            { nombre: "regalo pequeño", prob: 70 }, { nombre: "regalo mediano", prob: 40 },
+            { nombre: "regalo grande", prob: 9 }, { nombre: "pocion bonus bucks", prob: 15 },
+            { nombre: "pocion XP bonus", prob: 15 }, { nombre: "pet periquito bruja", prob: 40 },
+            { nombre: "jerbo gelatinoso", prob: 20 }, { nombre: "conechoco", prob: 10 },
+            { nombre: "chocodrilo", prob: 10 }, { nombre: "iguana de gomita", prob: 20 },
+            { nombre: "caja de patitos", prob: 10 }, { nombre: "caja de bellotas", prob: 5 },
+            { nombre: "caja de conechocos", prob: 5 }, { nombre: "huevo de cristal", prob: 2 }
+        ];
+
+        let estadoGlobal = { partidasJugadas: 0, tiempoEsperaHasta: 0, intentosPremio: 0, premiosAcumulados: [] };
+        let partidaActiva = { salaActual: 1, corazones: 3, maxCorazones: 3, dulces: 0, inventario: [null, null, null], efectoRegeneracion: false, efectoAguaBendita: false };
+
+        window.addEventListener('load', () => {
+            let save = localStorage.getItem('hotel_abandonado_save_definitivo');
+            if (save) estadoGlobal = JSON.parse(save);
+            actualizarUI_Menu();
+            setInterval(actualizarTemporizador, 1000);
+        });
+
+        function guardarEstadoGlobal() { localStorage.setItem('hotel_abandonado_save_definitivo', JSON.stringify(estadoGlobal)); }
+
+        function actualizarTemporizador() {
+            let ahora = Date.now();
+            let elemTemp = document.getElementById('temporizador-espera');
+            let btnJugar = document.getElementById('btn-jugar');
+            if (estadoGlobal.tiempoEsperaHasta > ahora) {
+                let rest = Math.ceil((estadoGlobal.tiempoEsperaHasta - ahora) / 1000);
+                elemTemp.innerText = `⏳ Enfriamiento: ${Math.floor(rest/60)}:${rest%60 < 10 ? '0':''}${rest%60}`;
+                btnJugar.disabled = true;
+            } else {
+                elemTemp.innerText = "";
+                btnJugar.disabled = estadoGlobal.partidasJugadas >= 2;
+            }
+        }
+
+        function actualizarUI_Menu() {
+            document.getElementById('info-reintentos').innerText = `Partidas disponibles: ${2 - estadoGlobal.partidasJugadas}/2`;
+            document.getElementById('intentos-premio-disponibles').innerText = `🎁 Intentos de Premios: ${estadoGlobal.intentosPremio}`;
+            let listaEl = document.getElementById('lista-premios-ganados');
+            listaEl.innerHTML = estadoGlobal.premiosAcumulados.length === 0 ? "<li>Ningún premio reclamado aún.</li>" : "";
+            estadoGlobal.premiosAcumulados.forEach(p => { let li = document.createElement('li'); li.innerText = p; listaEl.appendChild(li); });
+            actualizarTemporizador();
+        }
+
+        function iniciarPartida() {
+            if (estadoGlobal.partidasJugadas >= 2 || Date.now() < estadoGlobal.tiempoEsperaHasta) return;
+            partidaActiva = { salaActual: 1, corazones: 3, maxCorazones: 3, dulces: 0, inventario: [null, null, null], efectoRegeneracion: false, efectoAguaBendita: false };
+            document.getElementById('pantalla-menu').style.display = 'none';
+            generarSala();
+        }
+
+        function generarSala() {
+            document.getElementById('lbl-sala-actual').innerText = `SALA ${partidaActiva.salaActual} / 260`;
+            actualizarPanelSuperiorUI();
+
+            if (partidaActiva.salaActual % 10 === 0 && partidaActiva.salaActual !== 260) { abrirTienda(); return; }
+
+            let contenedorMuebles = document.getElementById('zona-muebles-sala');
+            contenedorMuebles.innerHTML = "";
+            if (Math.random() < 0.23) {
+                let mDiv = document.createElement('div');
+                mDiv.className = 'mueble-cajonera';
+                mDiv.innerHTML = `<div class="cajon-linea"></div><div class="cajon-linea"></div>`;
+                mDiv.onclick = () => examinarMueble(mDiv);
+                contenedorMuebles.appendChild(mDiv);
+            }
+
+            let cantidadPuertas = partidaActiva.salaActual >= 90 ? 5 : (partidaActiva.salaActual >= 50 ? 4 : 3);
+            let contPuertas = document.getElementById('contenedor-puertas-sala');
+            contPuertas.innerHTML = "";
+
+            for (let i = 0; i < cantidadPuertas; i++) {
+                let tipo = seleccionarTipoPuerta();
+                let pMarco = document.createElement('div');
+                pMarco.className = 'puerta-marco';
+
+                let numLbl = document.createElement('div');
+                numLbl.className = 'numero-puerta';
+             numLbl.innerText = `#${partidaActiva.salaActual}-${i+1}`;
+
+                let hoja = document.createElement('div');
+                hoja.className = 'hoja-puerta ' + tipo.clase;
+                if (tipo.id === 'rota') hoja.innerHTML = `<div class="tablon-roto"></div><div class="tablon-roto-2"></div>`;
+                if (tipo.id === 'embrujada') hoja.innerHTML = `<div class="telarana-css"></div>`;
+
+                pMarco.appendChild(numLbl);
+                pMarco.appendChild(hoja);
+                pMarco.onclick = () => procesarSeleccionPuerta(tipo, pMarco);
+                contPuertas.appendChild(pMarco);
+            }
+            partidaActiva.efectoAguaBendita = false;
+        }
+
+        function seleccionarTipoPuerta() {
+            let rand = Math.random() * 100;
+            let probEmbrujada = partidaActiva.salaActual >= 20 ? 15 : 5;
+            if (partidaActiva.salaActual >= 40) probEmbrujada = 25;
+            if (rand < 30) return { id: 'comun', nombre: 'Puerta Común', clase: 'puerta-comun' };
+            if (rand < 30 + 55) return { id: 'rota', nombre: 'Puerta Rota', clase: 'puerta-rota' };
+            if (rand < 30 + 55 + probEmbrujada) return { id: 'embrujada', nombre: 'Puerta Embrujada', clase: 'puerta-embrujada' };
+            return { id: 'electrica', nombre: 'Puerta Eléctrica', clase: 'puerta-electrica' };
+        }
+
+        function procesarSeleccionPuerta(tipo, marcoEl) {
+            let tieneLlave = partidaActiva.inventario.indexOf('Llave Dorada');
+            if (tipo.id === 'embrujada' && tieneLlave !== -1) {
+                partidaActiva.inventario[tieneLlave] = null;
+                actualizarPanelSuperiorUI();
+                ejecutarResultadoPuerta(tipo, marcoEl);
+                return;
+            }
+            if (tipo.id === 'embrujada') abrirPuzleLaberinto(tipo, marcoEl);
+            else ejecutarResultadoPuerta(tipo, marcoEl);
+        }
+
+        function ejecutarResultadoPuerta(tipo, marcoEl) {
+            partidaActiva.dulces += 1;
+            let ataqueFantasma = false;
+
+            if (!partidaActiva.efectoAguaBendita) {
+                if (tipo.id === 'rota' && Math.random() < 0.45) ataqueFantasma = true;
+                if (tipo.id === 'embrujada' && Math.random() < 0.69) ataqueFantasma = true;
+                if (tipo.id === 'electrica' && Math.random() < 0.89) ataqueFantasma = true;
+            }
+
+            if (ataqueFantasma) {
+                let fantasma = document.createElement('div');
+                fantasma.className = 'fantasma-animacion';
+                marcoEl.appendChild(fantasma);
+
+                partidaActiva.corazones -= 1;
+                partidaActiva.efectoRegeneracion = false;
+                mostrarHistorial(`👻 ¡FANTASMA ATACÓ! -1 Corazón`);
+
+                setTimeout(() => { fantasma.remove(); avanzarSalaPostPuerta(); }, 1200);
+            } else {
+                if (partidaActiva.efectoRegeneracion && partidaActiva.corazones < partidaActiva.maxCorazones) partidaActiva.corazones++;
+                otorgarBotinPuerta(tipo);
+                avanzarSalaPostPuerta();
+            }
+        }
+
+        function avanzarSalaPostPuerta() {
+            actualizarPanelSuperiorUI();
+
+            if (partidaActiva.salaActual % 3 === 0) {
+                estadoGlobal.intentosPremio++;
+                guardarEstadoGlobal();
+                actualizarUI_Menu();
+                mostrarHistorial(`🎁 ¡Pasaste la sala ${partidaActiva.salaActual}! +1 Intento de Premio ganado.`);
+            }
+
+            if (partidaActiva.corazones <= 0) { alert("💀 Fin de la partida. Te quedaste sin corazones."); finalizarPartida(); return; }
+            if (partidaActiva.salaActual >= 260) { alert("🎉 ¡Has completado las 260 salas!"); finalizarPartida(); return; }
+            
+            partidaActiva.salaActual++;
+            setTimeout(generarSala, 500);
+        }
+
+        function otorgarBotinPuerta(tipo) {
+            if (tipo.id === 'comun') partidaActiva.dulces += 3;
+            else if (tipo.id === 'rota') agregarItemInventario(Math.random() < 0.5 ? 'Rosa 🌹' : 'Poción Corazón 🧪');
+            else if (tipo.id === 'embrujada') { if (Math.random() < 0.55) agregarItemInventario('Rosa 🌹'); partidaActiva.dulces += 3; }
+            else if (tipo.id === 'electrica') {
+                let r = Math.random();
+                if (r < 0.57) agregarItemInventario('Espanta Fantasma');
+                else if (r < 0.92) partidaActiva.efectoRegeneracion = true;
+                partidaActiva.dulces += 10;
+            }
+            mostrarHistorial(`¡Sala superada con éxito!`);
+        }
+
+        function agregarItemInventario(item) {
+            let slotVacio = partidaActiva.inventario.indexOf(null);
+            if (slotVacio !== -1) { partidaActiva.inventario[slotVacio] = item; }
+            actualizarPanelSuperiorUI();
+        }
+
+        function usarItemInv(index) {
+            let item = partidaActiva.inventario[index];
+            if (!item) return;
+            if (item === 'Rosa 🌹' && partidaActiva.corazones < partidaActiva.maxCorazones) partidaActiva.corazones++;
+            else if (item === 'Poción Corazón 🧪') partidaActiva.corazones = Math.min(partidaActiva.maxCorazones, partidaActiva.corazones + 2);
+            else if (item === 'Espanta Fantasma') partidaActiva.efectoAguaBendita = true;
+            partidaActiva.inventario[index] = null;
+            actualizarPanelSuperiorUI();
+        }
+
+        function examinarMueble(elem) {
+            elem.style.pointerEvents = 'none'; elem.style.opacity = '0.4';
+            let dulcesGanados = Math.floor(Math.random() * 3) + 2;
+            partidaActiva.dulces += dulcesGanados;
+            if (Math.random() < 0.80) agregarItemInventario('Llave Dorada');
+            actualizarPanelSuperiorUI();
+        }
+
+        function abrirTableroPremios() {
+            document.getElementById('lbl-intentos-tablero').innerText = estadoGlobal.intentosPremio;
+            document.getElementById('resultado-tirada').innerText = "Toca la ruleta para gastar un intento.";
+            document.getElementById('modal-tablero').style.display = 'flex';
+        }
+
+        function cerrarTableroPremios() {
+            document.getElementById('modal-tablero').style.display = 'none';
+            actualizarUI_Menu();
+        }
+
+        function tirarIntentoPremio() {
+            if (estadoGlobal.intentosPremio <= 0) {
+                document.getElementById('resultado-tirada').innerText = "❌ No tienes intentos disponibles. ¡Juega y avanza cada 3 salas!";
+                return;
+            }
+            estadoGlobal.intentosPremio--;
+            document.getElementById('lbl-intentos-tablero').innerText = estadoGlobal.intentosPremio;
+
+            let obtenidos = [];
+            TABLA_PREMIOS.forEach(p => { if (Math.random() * 100 <= p.prob) obtenidos.push(p.nombre); });
+            if (obtenidos.length === 0) obtenidos.push("huevo básico");
+
+            let premioGanado = obtenidos[Math.floor(Math.random() * obtenidos.length)];
+            estadoGlobal.premiosAcumulados.push(premioGanado);
+            guardarEstadoGlobal();
+
+            document.getElementById('resultado-tirada').innerHTML = `🎉 ¡Ganaste: <b style="color:var(--acento-fuego);">${premioGanado}</b>!`;
+            actualizarUI_Menu();
+        }
+
+        function abrirTienda() {
+            document.getElementById('lbl-dulces-tienda').innerText = partidaActiva.dulces;
+            let container = document.getElementById('lista-items-tienda');
+            container.innerHTML = "";
+
+            let items = [
+                { nombre: "Crucifijo (Protección)", precio: 5, itemInv: "Espanta Fantasma" },
+                { nombre: "Poción de Vida (+2 Salud)", precio: 10, accion: () => { partidaActiva.corazones = Math.min(partidaActiva.maxCorazones, partidaActiva.corazones + 2); } }
+            ];
+
+            items.forEach(it => {
+                let row = document.createElement('div');
+                row.className = 'item-tienda-row';
+                row.innerHTML = `<span><b>${it.nombre}</b> - ${it.precio} Dulces</span>`;
+                let btn = document.createElement('button');
+                btn.className = 'btn-comprar';
+                btn.innerText = 'Comprar';
+                btn.onclick = () => {
+                    if (partidaActiva.dulces >= it.precio) {
+                        partidaActiva.dulces -= it.precio;
+                        document.getElementById('lbl-dulces-tienda').innerText = partidaActiva.dulces;
+                        if (it.itemInv) agregarItemInventario(it.itemInv);
+                        if (it.accion) it.accion();
+                        actualizarPanelSuperiorUI();
+                        alert("¡Comprado y añadido al inventario!");
+                    } else { alert("Dulces insuficientes."); }
+                };
+                row.appendChild(btn);
+                container.appendChild(row);
+            });
+            document.getElementById('modal-tienda').style.display = 'flex';
+        }
+
+        function cerrarTienda() {
+            document.getElementById('modal-tienda').style.display = 'none';
+            partidaActiva.salaActual++;
+            generarSala();
+        }
+
+        let canvas = document.getElementById('canvasLab'); let ctx = canvas.getContext('2d');
+        let dibujando = false; let tipoPendiente = null; let marcoPendiente = null;
+
+        function abrirPuzleLaberinto(tipo, marco) {
+            tipoPendiente = tipo; marcoPendiente = marco;
+            document.getElementById('modal-puzle').style.display = 'flex';
+            ctx.clearRect(0, 0, 280, 280);
+            ctx.fillStyle = '#111827'; ctx.fillRect(0, 0, 280, 280);
+            ctx.fillStyle = '#10b981'; ctx.fillRect(10, 10, 40, 40);
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(230, 230, 40, 40);
+        }
+
+        canvas.addEventListener('pointerdown', () => { dibujando = true; ctx.beginPath(); });
+        canvas.addEventListener('pointermove', (e) => {
+            if (!dibujando) return;
+            let rect = canvas.getBoundingClientRect();
+            let x = e.clientX - rect.left, y = e.clientY - rect.top;
+            ctx.lineWidth = 6; ctx.strokeStyle = '#3b82f6';
+            ctx.lineTo(x, y); ctx.stroke();
+            if (x >= 230 && y >= 230) {
+                dibujando = false;
+                document.getElementById('modal-puzle').style.display = 'none';
+                ejecutarResultadoPuerta(tipoPendiente, marcoPendiente);
+            }
+        });
+        canvas.addEventListener('pointerup', () => { dibujando = false; });
+        function cancelarPuzle() { document.getElementById('modal-puzle').style.display = 'none'; }
+
+        function actualizarPanelSuperiorUI() {
+            let contVidas = document.getElementById('contenedor-vidas'); contVidas.innerHTML = "";
+            for (let i = 0; i < partidaActiva.maxCorazones; i++) {
+                let divC = document.createElement('div');
+                divC.className = 'corazon-ui' + (i >= partidaActiva.corazones ? ' vacio' : '');
+                contVidas.appendChild(divC);
+            }
+            document.getElementById('lbl-dulces').innerText = partidaActiva.dulces;
+            for (let s = 0; s < 3; s++) {
+                document.getElementById(`inv-${s}`).innerText = partidaActiva.inventario[s] ? partidaActiva.inventario[s].substring(0, 8) : '-';
+            }
+        }
+
+        function mostrarHistorial(t) { document.getElementById('lbl-historial').innerText = t; }
+
+        function finalizarPartida() {
+            estadoGlobal.partidasJugadas++;
+            if (estadoGlobal.partidasJugadas === 1) estadoGlobal.tiempoEsperaHasta = Date.now() + (4 * 60 * 1000);
+            guardarEstadoGlobal();
+            actualizarUI_Menu();
+            document.getElementById('pantalla-menu').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
